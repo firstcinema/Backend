@@ -61,22 +61,22 @@ const UserSchema = mongoose.Schema({
 
 const User = (module.exports = mongoose.model("User", UserSchema));
 
-module.exports.findOneUser = (conditions, callback) => {
+findOneUser = (conditions, callback) => {
     return User.findOne(conditions, callback);
 };
-module.exports.findUsers = (conditions, callback) => {
+const findUsers = (conditions, callback) => {
     return User.find(conditions, callback);
 };
 
-module.exports.getById = (id, callback) => {
+const getById = (id, callback) => {
     User.findById(id, callback);
 };
 
-module.exports.getByUserName = (userName, callback) => {
+const getByUserName = (userName, callback) => {
     User.findOne({ userName: userName }, callback);
 };
 
-module.exports.addUser = (user, callback) => {
+const addUser = (user, callback) => {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(user.password, salt, (err, hash) => {
             if (err) throw err;
@@ -86,7 +86,7 @@ module.exports.addUser = (user, callback) => {
     });
 };
 
-module.exports.deleteById = (userId, callback) => {
+const deleteById = (userId, callback) => {
     User.findByIdAndDelete({
             _id: userId
         },
@@ -94,13 +94,24 @@ module.exports.deleteById = (userId, callback) => {
     );
 };
 
-module.exports.deleteByName = (name, callback) => {
+const deleteByName = (name, callback) => {
     User.deleteMany({ userName: name }, callback);
 };
 
-module.exports.comparePassword = (attemptedPassword, hash, callback) => {
+const comparePassword = (attemptedPassword, hash, callback) => {
     bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
         if (error) throw error;
         callback(isMatch);
     });
 };
+
+module.exports = {
+    findOneUser,
+    findUsers,
+    getById,
+    getByUserName,
+    addUser,
+    deleteById,
+    deleteByName,
+    comparePassword
+}
