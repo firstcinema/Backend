@@ -7,25 +7,23 @@ const express = require("express");
 const cors = require("cors");
 
 // Routes
-// const posts = require('./routes/api/posts');
 const users = require("./routes/UserRoute");
-const authentication = require("./routes/authentication");
+const authentication = require("./routes/AuthRoute");
 
 const app = express();
 
 
 // MiddleWare
-// app.use(cors());
 app.use(cors({
-  origin: 'http://localhost:8080',
-  credentials: true
+    origin: 'http://localhost:8080',
+    credentials: true
 }));
 
 app.use(bodyParser.json());
 
 app.use(cookieSession({
-  keys: [keys.session.cookieKey],
-  maxAge: 24 * 60 * 60 * 1000
+    keys: [keys.session.cookieKey],
+    maxAge: 24 * 60 * 60 * 1000
 }));
 
 app.use(passport.initialize());
@@ -34,21 +32,18 @@ app.use(passport.session());
 require("./config/passport")(passport);
 
 mongoose.connect(keys.mongodb.dbURI, {
-  useCreateIndex: true,
-  useNewUrlParser: true
+    useCreateIndex: true,
+    useNewUrlParser: true
 });
 
 mongoose.connection.on("connected", () => {
-  console.log(`Cinema: Successfully connected to database ${keys.mongodb.dbURI}`);
+    console.log(`Cinema: Successfully connected to database ${keys.mongodb.dbURI}`);
 });
 
 mongoose.connection.on("error", err => {
-  console.log(`Cinema: Error Occurred ${err}`);
+    console.log(`Cinema: Error Occurred ${err}`);
 });
 
-// require("./config/passport");
-
-//app.use('/api/posts', posts);
 app.use("/api/users", users);
 app.use("/api/auth", authentication);
 

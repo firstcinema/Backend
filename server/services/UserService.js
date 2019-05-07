@@ -25,6 +25,7 @@ const count = (callback) => {
     User.count().exec(callback);
 }
 
+
 const findOneUser = (conditions, callback) => {
     User.findOneUser(conditions, callback);
 };

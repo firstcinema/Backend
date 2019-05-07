@@ -16,6 +16,6 @@ router.get("/:userName", userController.findOneUser);
 
 router.post('/confirmation', userController.confirmUser);
 
-// router.post('/resendConfirmation', userController.resendTokenPost);
+router.post('/resendConfirmation', userController.resendTokenPost);
 
 module.exports = router;

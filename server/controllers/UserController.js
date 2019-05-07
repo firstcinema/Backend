@@ -152,10 +152,44 @@ const confirmUser = (req, res) => {
     });
 }
 
+const resendTokenPost = (req, res) => {
+    userService.findOneUser({
+        email: req.body.email
+    }, (error, user) => {
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'We were unable to find a user associated with this email address.'
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: 'Your account has already been verified.'
+            });
+        }
+
+        var token = new Token({
+            _userId: user._id,
+            token: crypto.randomBytes(16).toString('hex')
+        });
+
+        tokenService.saveToken(token, (error) => {
+            if (error) return res.status(500).send({ success: false, message: error.message });
+            res.status(201).json({
+                success: true,
+                message: `A new verification email has been sent to ${user.email}`
+            });
+        });
+    });
+}
+
 module.exports = {
     createUser,
     updateUser,
     confirmUser,
+    resendTokenPost,
     deleteUser,
     findOneUser,
     findUser,

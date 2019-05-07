@@ -24,12 +24,6 @@ router.get("/user", authMiddleware, (req, res) => {
     });
 });
 
-/* router.post('/login', passport.authenticate('local', {
-  failureRedirect: '/'
-}), function (req, res) {
-  res.status(201).send({code: 2021, message: "User Logged in"})
-}); */
-
 router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
         if (err) {
@@ -56,8 +50,7 @@ router.post('/login', function(req, res, next) {
 
 router.get("/logout", (req, res) => {
     req.logout();
-    console.log("Logged out");
-    return res.send();
+    return res.status(200).send();
 });
 
 module.exports = router;
