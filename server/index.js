@@ -9,7 +9,7 @@ const cors = require("cors");
 // Routes
 const users = require("./routes/UserRoute");
 const authentication = require("./routes/AuthRoute");
-
+const mailRoute = require('./routes/MailRoute');
 const app = express();
 
 
@@ -46,6 +46,7 @@ mongoose.connection.on("error", err => {
 
 app.use("/api/users", users);
 app.use("/api/auth", authentication);
+app.use('/api/mail', mailRoute);
 
 const port = process.env.PORT || 5000;
 
