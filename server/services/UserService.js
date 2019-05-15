@@ -31,7 +31,8 @@ const findOneUser = (conditions, callback) => {
 };
 
 const updateUser = (userId, update, callback) => {
-    User.findByIdAndUpdate(userId, update, { new: true }, callback);
+    User.updateUser(userId, update, callback);
+    //User.findByIdAndUpdate(userId, update, { new: true }, callback);
 }
 
 module.exports = {

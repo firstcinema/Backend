@@ -14,7 +14,7 @@ router.get('/paged/:page', userController.pagedUsers);
 
 router.get("/:userName", userController.findOneUser);
 
-router.post('/confirmation', userController.confirmUser);
+router.get('/confirmation/:token', userController.confirmUser);
 
 router.post('/resendConfirmation', userController.resendTokenPost);
 

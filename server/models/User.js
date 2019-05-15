@@ -61,7 +61,7 @@ const UserSchema = mongoose.Schema({
 
 const User = (module.exports = mongoose.model("User", UserSchema));
 
-findOneUser = (conditions, callback) => {
+const findOneUser = (conditions, callback) => {
     return User.findOne(conditions, callback);
 };
 const findUsers = (conditions, callback) => {
@@ -88,10 +88,8 @@ const addUser = (user, callback) => {
 
 const deleteById = (userId, callback) => {
     User.findByIdAndDelete({
-            _id: userId
-        },
-        callback
-    );
+        _id: userId
+    }, callback);
 };
 
 const deleteByName = (name, callback) => {
@@ -105,6 +103,12 @@ const comparePassword = (attemptedPassword, hash, callback) => {
     });
 };
 
+const updateUser = (userId, update, callback) => {
+    User.findByIdAndUpdate(userId, update, {
+        useFindAndModify: false
+    }, callback);
+}
+
 module.exports = {
     findOneUser,
     findUsers,
@@ -113,5 +117,6 @@ module.exports = {
     addUser,
     deleteById,
     deleteByName,
-    comparePassword
+    comparePassword,
+    updateUser
 }

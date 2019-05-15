@@ -101,9 +101,15 @@ const updateUser = (req, res, next) => {
 }
 
 const confirmUser = (req, res) => {
-    TokenService.findToken({
-        token: req.body.token
-    }, (error, token) => {
+    tokenService.findToken(req.params.token, (error, token) => {
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+
         if (!token) {
             return res.status(400).json({
                 success: false,
@@ -112,8 +118,7 @@ const confirmUser = (req, res) => {
         }
 
         userService.findOneUser({
-            _id: token._userId,
-            email: req.body.email
+            _id: token._userId
         }, (error, user) => {
             if (error) {
                 return res.status(500).json({
@@ -134,7 +139,9 @@ const confirmUser = (req, res) => {
                 });
             }
 
-            userService.updateUser(user._id, {
+            userService.updateUser({
+                _id: user._id
+            }, {
                 isVerified: true
             }, (error) => {
                 if (error) {
