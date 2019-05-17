@@ -11,14 +11,14 @@ function sendMail(req, res) {
     let replacements = req.body.replacements;
     //replacements.user = req.user;
 
-    tokenService.findByUserId(req.user._id, (error, token) => {
+    tokenService.findByUserId(req.user._id, (error, tokenObj) => {
         if (error) {
             res.status(400).json({
                 success: false,
                 message: 'Could not find verification token'
             });
         }
-        replacements.verificationURL = `http://localhost:5000/api/users/confirmation/${token.token}`;
+        replacements.verificationURL = `http://localhost:5000/api/users/confirmation/${tokenObj.token}`;
 
         emailService.sendMail(mailOptions, replacements, (error, info) => {
             if (error) {

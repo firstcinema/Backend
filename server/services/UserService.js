@@ -18,11 +18,14 @@ const findUsers = (conditions, callback) => {
 };
 
 const pagedUsers = (perPage, page, limit, callback) => {
-    User.find({}).skip((perPage * page) - perPage).limit(limit).exec(callback);
+    User.find({}).skip((perPage * page) - perPage)
+        .limit(limit).sort({
+            joined: 'asc'
+        }).exec(callback);
 };
 
 const count = (callback) => {
-    User.count().exec(callback);
+    User.countDocuments().exec(callback);
 }
 
 

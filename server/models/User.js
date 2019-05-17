@@ -3,12 +3,10 @@ const bcrypt = require("bcrypt");
 
 const UserSchema = mongoose.Schema({
     firstName: {
-        type: String,
-        required: true
+        type: String
     },
     lastName: {
-        type: String,
-        required: true
+        type: String
     },
     email: {
         type: String,
@@ -23,8 +21,7 @@ const UserSchema = mongoose.Schema({
         required: true
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
     joined: {
         type: Date,
@@ -56,27 +53,38 @@ const UserSchema = mongoose.Schema({
         required: false
     },
     following: [String],
-    followers: [String]
+    followers: [String],
+    twitter: {
+        id: String,
+        token: String,
+        username: String
+    },
+    discord: {
+        id: String,
+        token: String,
+        username: String,
+        discriminator: String
+    }
 });
 
 const User = (module.exports = mongoose.model("User", UserSchema));
 
-const findOneUser = (conditions, callback) => {
+module.exports.findOneUser = (conditions, callback) => {
     return User.findOne(conditions, callback);
 };
-const findUsers = (conditions, callback) => {
+module.exports.findUsers = (conditions, callback) => {
     return User.find(conditions, callback);
 };
 
-const getById = (id, callback) => {
+module.exports.getById = (id, callback) => {
     User.findById(id, callback);
 };
 
-const getByUserName = (userName, callback) => {
+module.exports.getByUserName = (userName, callback) => {
     User.findOne({ userName: userName }, callback);
 };
 
-const addUser = (user, callback) => {
+module.exports.addUser = (user, callback) => {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(user.password, salt, (err, hash) => {
             if (err) throw err;
@@ -86,30 +94,30 @@ const addUser = (user, callback) => {
     });
 };
 
-const deleteById = (userId, callback) => {
+module.exports.deleteById = (userId, callback) => {
     User.findByIdAndDelete({
         _id: userId
     }, callback);
 };
 
-const deleteByName = (name, callback) => {
+module.exports.deleteByName = (name, callback) => {
     User.deleteMany({ userName: name }, callback);
 };
 
-const comparePassword = (attemptedPassword, hash, callback) => {
+module.exports.comparePassword = (attemptedPassword, hash, callback) => {
     bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
         if (error) throw error;
         callback(isMatch);
     });
 };
 
-const updateUser = (userId, update, callback) => {
+module.exports.updateUser = (userId, update, callback) => {
     User.findByIdAndUpdate(userId, update, {
         useFindAndModify: false
     }, callback);
 }
 
-module.exports = {
+/* module.exports = {
     findOneUser,
     findUsers,
     getById,
@@ -119,4 +127,4 @@ module.exports = {
     deleteByName,
     comparePassword,
     updateUser
-}
+} */

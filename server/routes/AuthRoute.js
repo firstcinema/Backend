@@ -1,3 +1,4 @@
+const keys = require('../config/keys');
 const express = require("express");
 const User = require("../models/User");
 const passport = require("passport");
@@ -52,5 +53,20 @@ router.get("/logout", (req, res) => {
     req.logout();
     return res.status(200).send();
 });
+
+
+router.get('/discord', passport.authenticate('discord'));
+
+router.get('/discord/callback', passport.authenticate('discord', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+}));
+
+router.get('/twitter', passport.authenticate('twitter'));
+
+router.get('/twitter/callback', passport.authenticate('twitter', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+}));
 
 module.exports = router;
