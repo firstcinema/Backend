@@ -1,5 +1,3 @@
-const configKeys = require('./keys');
-const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/User");
 
 module.exports = passport => {
