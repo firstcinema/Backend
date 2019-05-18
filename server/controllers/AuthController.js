@@ -38,7 +38,7 @@ const logout = function(req, res) {
 }
 
 const authenticate = function(strat) {
-    return passport.authenticate('strat');
+    return passport.authenticate(strat);
 }
 
 const callback = function(strat) {

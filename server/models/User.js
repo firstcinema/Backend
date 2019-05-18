@@ -64,6 +64,11 @@ const UserSchema = mongoose.Schema({
         token: String,
         username: String,
         discriminator: String
+    },
+    google: {
+        id: String,
+        token: String,
+        username: String
     }
 });
 

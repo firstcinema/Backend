@@ -14,7 +14,9 @@ router.get('/discord', authController.authenticate('discord'));
 router.get('/discord/callback', authController.callback('discord'));
 
 router.get('/twitter', authController.authenticate('twitter'));
-
 router.get('/twitter/callback', authController.callback('twitter'));
+
+router.get('/google', authController.authenticate('google'));
+router.get('/google/callback', authController.callback('google'));
 
 module.exports = router;

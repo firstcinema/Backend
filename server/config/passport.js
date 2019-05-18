@@ -16,5 +16,7 @@ module.exports = passport => {
 
     passport.use(require('./strategies/TwitterStrat'));
 
+    passport.use(require('./strategies/GoogleStrat'));
+
     passport.use(require('./strategies/LocalStrat'));
 };

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const keys = require("./config/keys");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
@@ -54,6 +53,6 @@ app.use('/api/mail', mailRoute);
 
 
 // Express
-const port = process.env.PORT || 5000;
+const port = keys.expressPort || 5000;
 
 app.listen(port, () => console.log(`Cinema: Server started on port ${port}`));
