@@ -18,4 +18,6 @@ router.get('/confirmation/:token', userController.confirmUser);
 
 router.post('/resendConfirmation', userController.resendTokenPost);
 
+router.post('/follow', userController.followUser);
+
 module.exports = router;

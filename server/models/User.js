@@ -52,24 +52,46 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: false
     },
-    following: [String],
-    followers: [String],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    watched: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Film'
+    }],
     twitter: {
+        type: Object,
+        default: {}
+    },
+    discord: {
+        type: Object,
+        default: {}
+    },
+    google: {
+        type: Object,
+        default: {}
+    }
+    /* twitter: {
         id: String,
         token: String,
         username: String
-    },
-    discord: {
+    } */
+    /* discord: {
         id: String,
         token: String,
         username: String,
         discriminator: String
-    },
-    google: {
+    } */
+    /* google: {
         id: String,
         token: String,
         username: String
-    }
+    } */
 });
 
 const User = (module.exports = mongoose.model("User", UserSchema));
@@ -121,15 +143,3 @@ module.exports.updateUser = (userId, update, callback) => {
         useFindAndModify: false
     }, callback);
 }
-
-/* module.exports = {
-    findOneUser,
-    findUsers,
-    getById,
-    getByUserName,
-    addUser,
-    deleteById,
-    deleteByName,
-    comparePassword,
-    updateUser
-} */

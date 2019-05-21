@@ -10,12 +10,12 @@ const twitterStrat = new TwitterStrategy({
     passReqToCallback: true
 }, function(req, accessToken, refreshToken, profile, done) {
     process.nextTick(function() {
-
         User.findOne({
             'twitter.id': profile.id
         }, (error, user) => {
-            if (error) return done(error);
-
+            if (error) {
+                return done(error);
+            }
             if (user) {
                 if (user.twitter.username !== profile.username) {
                     user.twitter.username = profile.username;
@@ -25,38 +25,32 @@ const twitterStrat = new TwitterStrategy({
                         }
                     });
                 }
-                done(null, user);
-            } else {
-
-                if (req.user) {
-                    let loggedUser = req.user;
-                    loggedUser.twitter.id = profile.id;
-                    loggedUser.twitter.token = accessToken;
-                    loggedUser.twitter.username = profile.username;
-                    loggedUser.save(function(error) {
-                        if (error) {
-                            return done(error);
-                        }
-                        done(null, loggedUser);
-                    });
-                }
-
-                let newUser = new User();
-
-                newUser.email = profile.emails[0].value;
-                newUser.userName = profile.displayName;
-                newUser.isVerified = true;
-                newUser.twitter.id = profile.id;
-                newUser.twitter.token = accessToken;
-                newUser.twitter.username = profile.username;
-                newUser.password = '';
-                newUser.save(function(error) {
-                    if (error) {
-                        return done(error);
-                    }
-                    done(null, newUser);
-                });
+                return done(null, user);
             }
+            if (req.user) {
+                let loggedUser = req.user;
+                User.updateUser(loggedUser._id, {
+                    'twitter.id': profile.id,
+                    'twitter.token': accessToken,
+                    'twitter.username': profile.username
+                });
+                return done(null, loggedUser);
+            }
+
+            let newUser = new User();
+            newUser.email = profile.emails[0].value;
+            newUser.userName = profile.displayName;
+            newUser.isVerified = true;
+            newUser.twitter.id = profile.id;
+            newUser.twitter.token = accessToken;
+            newUser.twitter.username = profile.username;
+            newUser.password = '';
+            newUser.save(function(error) {
+                if (error) {
+                    return done(error);
+                }
+                return done(null, newUser);
+            });
         });
     });
 });

@@ -192,6 +192,23 @@ const resendTokenPost = (req, res) => {
     });
 }
 
+const followUser = function(req, res) {
+    const userId = req.user._id;
+    const followingId = req.body.followingId;
+    userService.followUser(userId, followingId, (error, doc) => {
+        if (error) {
+            return res.json({
+                success: false,
+                message: error.message
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'User Followed'
+        });
+    });
+}
+
 module.exports = {
     createUser,
     updateUser,
@@ -200,5 +217,6 @@ module.exports = {
     deleteUser,
     findOneUser,
     findUser,
-    pagedUsers
+    pagedUsers,
+    followUser
 };
