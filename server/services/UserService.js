@@ -63,6 +63,31 @@ const followUser = function(userId, followingId, callback) {
     });
 }
 
+const unfollowUser = function(userId, followingId, callback) {
+
+    let bulk = User.collection.initializeUnorderedBulkOp();
+
+    bulk.find({
+        _id: userId
+    }).upsert().updateOne({
+        $pull: {
+            following: mongoose.Types.ObjectId(followingId)
+        }
+    });
+
+    bulk.find({
+        _id: mongoose.Types.ObjectId(followingId)
+    }).upsert().updateOne({
+        $pull: {
+            followers: mongoose.Types.ObjectId(userId)
+        }
+    });
+
+    bulk.execute((error, doc) => {
+        callback(error, doc);
+    });
+}
+
 module.exports = {
     count,
     saveUser,
@@ -71,5 +96,6 @@ module.exports = {
     findOneUser,
     findUsers,
     pagedUsers,
-    followUser
+    followUser,
+    unfollowUser
 };

@@ -209,6 +209,23 @@ const followUser = function(req, res) {
     });
 }
 
+const unfollowUser = function(req, res) {
+    const userId = req.user._id;
+    const followingId = req.body.followingId;
+    userService.unfollowUser(userId, followingId, (error, doc) => {
+        if (error) {
+            return res.json({
+                success: false,
+                message: error.message
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'User Unfollowed'
+        });
+    });
+}
+
 module.exports = {
     createUser,
     updateUser,
@@ -218,5 +235,6 @@ module.exports = {
     findOneUser,
     findUser,
     pagedUsers,
-    followUser
+    followUser,
+    unfollowUser
 };

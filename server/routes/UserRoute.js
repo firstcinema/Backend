@@ -20,4 +20,6 @@ router.post('/resendConfirmation', userController.resendTokenPost);
 
 router.post('/follow', userController.followUser);
 
+router.post('/unfollow', userController.unfollowUser);
+
 module.exports = router;
