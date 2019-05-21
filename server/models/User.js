@@ -140,6 +140,7 @@ module.exports.comparePassword = (attemptedPassword, hash, callback) => {
 
 module.exports.updateUser = (userId, update, callback) => {
     User.findByIdAndUpdate(userId, update, {
-        useFindAndModify: false
+        useFindAndModify: false,
+        new: true
     }, callback);
 }

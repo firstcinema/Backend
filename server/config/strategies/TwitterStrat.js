@@ -28,13 +28,12 @@ const twitterStrat = new TwitterStrategy({
                 return done(null, user);
             }
             if (req.user) {
-                let loggedUser = req.user;
-                User.updateUser(loggedUser._id, {
+                User.updateUser(req.user._id, {
                     'twitter.id': profile.id,
                     'twitter.token': accessToken,
                     'twitter.username': profile.username
-                });
-                return done(null, loggedUser);
+                }, (error, newUser) => {});
+                return done(null, req.user);
             }
 
             let newUser = new User();

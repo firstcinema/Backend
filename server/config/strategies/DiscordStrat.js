@@ -25,14 +25,13 @@ const discordStrat = new DiscordStrategy({
                 return done(null, user);
             }
             if (req.user) {
-                let loggedUser = req.user;
                 User.updateUser(req.user._id, {
                     'discord.id': profile.id,
                     'discord.token': accessToken,
                     'discord.username': profile.username,
                     'discord.discriminator': profile.discriminator
-                });
-                return done(null, loggedUser);
+                }, (error, newUser) => {});
+                return done(null, req.user);
             }
 
             let newUser = new User();
