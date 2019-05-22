@@ -18,21 +18,29 @@ function sendMail(req, res) {
                 message: 'Could not find verification token'
             });
         }
-        replacements.verificationURL = `http://localhost:5000/api/users/confirmation/${tokenObj.token}`;
 
-        emailService.sendMail(mailOptions, replacements, (error, info) => {
-            if (error) {
-                return res.status(500).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-            return res.status(200).json({
-                success: true,
-                message: `Email Sent: ${info.response}`
+        if (tokenObj && tokenObj.token) {
+            replacements.verificationURL = getURL('confirmation', tokenObj.token);
+        }
+    });
+
+    emailService.sendMail(mailOptions, replacements, (error, info) => {
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
             });
+        }
+        console.log(info);
+        return res.status(200).json({
+            success: true,
+            message: `Email Sent: ${info.response}`
         });
     });
+}
+
+function getURL(type, token) {
+    return `http://localhost:5000/api/users/${type}/${token}`;
 }
 
 module.exports = {
