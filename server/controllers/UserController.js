@@ -226,8 +226,27 @@ const unfollowUser = function(req, res) {
     });
 }
 
+const changePassword = function(req, res) {
+    let user = req.user;
+    let attemptedPassword = req.body.currentPassword;
+    let password = req.body.password;
+    userService.changePassword(user, attemptedPassword, password, (error, newUser) => {
+        if (error) {
+            return res.json({
+                success: false,
+                message: error.message
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Password successfully updated'
+        })
+    });
+}
+
 module.exports = {
     createUser,
+    changePassword,
     updateUser,
     confirmUser,
     resendTokenPost,

@@ -138,6 +138,16 @@ module.exports.comparePassword = (attemptedPassword, hash, callback) => {
     });
 };
 
+module.exports.changePassword = (user, newPassword, callback) => {
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newPassword, salt, (err, hash) => {
+            if (err) throw err;
+            user.password = hash;
+            user.save(callback);
+        });
+    });
+}
+
 module.exports.updateUser = (userId, update, callback) => {
     User.findByIdAndUpdate(userId, update, {
         useFindAndModify: false,

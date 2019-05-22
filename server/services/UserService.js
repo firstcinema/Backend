@@ -88,9 +88,22 @@ const unfollowUser = function(userId, followingId, callback) {
     });
 }
 
+const changePassword = function(user, attemptedPassword, newPassword, callback) {
+    User.comparePassword(attemptedPassword, user.password, (isMatch) => {
+        if (isMatch) {
+            User.changePassword(user, newPassword, (error, newUser) => {
+                callback(error, newUser);
+            });
+        } else {
+            callback(new Error('Incorrect Password'));
+        }
+    });
+}
+
 module.exports = {
     count,
     saveUser,
+    changePassword,
     updateUser,
     deleteUser,
     findOneUser,
