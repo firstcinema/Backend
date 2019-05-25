@@ -32,6 +32,13 @@ const UserSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    lastSeen: {
+        type: Date,
+        default: Date.now
+    },
+    remoteAddress: {
+        type: String
+    },
     image: {
         type: String,
         required: false
@@ -96,22 +103,23 @@ const UserSchema = mongoose.Schema({
 
 const User = (module.exports = mongoose.model("User", UserSchema));
 
-module.exports.findOneUser = (conditions, callback) => {
+function findSingleUser(conditions, callback) {
     return User.findOne(conditions, callback);
-};
-module.exports.findUsers = (conditions, callback) => {
+}
+
+function findUsers(conditions, callback) {
     return User.find(conditions, callback);
-};
+}
 
-module.exports.getById = (id, callback) => {
+function getById(id, callback) {
     User.findById(id, callback);
-};
+}
 
-module.exports.getByUserName = (userName, callback) => {
+function getByUserName(userName, callback) {
     User.findOne({ userName: userName }, callback);
-};
+}
 
-module.exports.addUser = (user, callback) => {
+function addUser(user, callback) {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(user.password, salt, (err, hash) => {
             if (err) throw err;
@@ -119,26 +127,26 @@ module.exports.addUser = (user, callback) => {
             user.save(callback);
         });
     });
-};
+}
 
-module.exports.deleteById = (userId, callback) => {
+function deleteById(userId, callback) {
     User.findByIdAndDelete({
         _id: userId
     }, callback);
-};
+}
 
-module.exports.deleteByName = (name, callback) => {
+function deleteByName(name, callback) {
     User.deleteMany({ userName: name }, callback);
-};
+}
 
-module.exports.comparePassword = (attemptedPassword, hash, callback) => {
+function comparePassword(attemptedPassword, hash, callback) {
     bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
         if (error) throw error;
         callback(isMatch);
     });
-};
+}
 
-module.exports.changePassword = (user, newPassword, callback) => {
+function changePassword(user, newPassword, callback) {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newPassword, salt, (err, hash) => {
             if (err) throw err;
@@ -148,9 +156,22 @@ module.exports.changePassword = (user, newPassword, callback) => {
     });
 }
 
-module.exports.updateUser = (userId, update, callback) => {
+function updateUser(userId, update, callback) {
     User.findByIdAndUpdate(userId, update, {
         useFindAndModify: false,
         new: true
     }, callback);
+}
+
+module.exports = {
+    findSingleUser,
+    findUsers,
+    getById,
+    getByUserName,
+    addUser,
+    deleteById,
+    deleteByName,
+    comparePassword,
+    changePassword,
+    updateUser
 }

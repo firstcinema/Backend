@@ -2,7 +2,7 @@ const { userService, tokenService } = require('../services');
 const Token = require('../models/Token');
 const crypto = require('crypto');
 
-const createUser = (req, res, next) => {
+function createUser(req, res, next) {
     userService.saveUser({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -30,18 +30,18 @@ const createUser = (req, res, next) => {
             });
         }
     });
-};
+}
 
-const deleteUser = (req, res, next) => {
+function deleteUser(req, res, next) {
     userService.deleteUser(req.body.id);
     res.json({
         success: true,
         message: "User Deleted"
     });
-};
+}
 
-const findOneUser = (req, res, next) => {
-    userService.findOneUser(req.params, (error, users) => {
+function findSingleUser(req, res, next) {
+    userService.findSingleUser(req.params, (error, users) => {
         if (error) throw error;
         res.json({
             success: true,
@@ -51,7 +51,7 @@ const findOneUser = (req, res, next) => {
     });
 };
 
-const findUser = (req, res, next) => {
+function findUser(req, res, next) {
     userService.findUsers(req.params, (error, users) => {
         if (error) throw error;
         return res.json({
@@ -62,7 +62,7 @@ const findUser = (req, res, next) => {
     });
 };
 
-const pagedUsers = (req, res, next) => {
+function pagedUsers(req, res, next) {
     var perPage = 15;
     var limit = 15;
     var page = Math.max(1, req.params.page || 1);
@@ -83,7 +83,7 @@ const pagedUsers = (req, res, next) => {
     });
 }
 
-const updateUser = (req, res, next) => {
+function updateUser(req, res, next) {
     userService.updateUser(req.params.userId, req.body, (error, user) => {
         if (error) {
             return res.status(500).json({
@@ -100,7 +100,7 @@ const updateUser = (req, res, next) => {
     });
 }
 
-const confirmUser = (req, res) => {
+function confirmUser(req, res) {
     tokenService.findToken(req.params.token, (error, token) => {
 
         if (error) {
@@ -117,7 +117,7 @@ const confirmUser = (req, res) => {
             });
         }
 
-        userService.findOneUser({
+        userService.findSingleUser({
             _id: token._userId
         }, (error, user) => {
             if (error) {
@@ -159,8 +159,8 @@ const confirmUser = (req, res) => {
     });
 }
 
-const resendTokenPost = (req, res) => {
-    userService.findOneUser({
+function resendTokenPost(req, res) {
+    userService.findSingleUser({
         email: req.body.email
     }, (error, user) => {
         if (!user) {
@@ -192,7 +192,7 @@ const resendTokenPost = (req, res) => {
     });
 }
 
-const followUser = function(req, res) {
+function followUser(req, res) {
     const userId = req.user._id;
     const followingId = req.body.followingId;
     userService.followUser(userId, followingId, (error, doc) => {
@@ -209,7 +209,7 @@ const followUser = function(req, res) {
     });
 }
 
-const unfollowUser = function(req, res) {
+function unfollowUser(req, res) {
     const userId = req.user._id;
     const followingId = req.body.followingId;
     userService.unfollowUser(userId, followingId, (error, doc) => {
@@ -226,7 +226,7 @@ const unfollowUser = function(req, res) {
     });
 }
 
-const changePassword = function(req, res) {
+function changePassword(req, res) {
     let user = req.user;
     let attemptedPassword = req.body.currentPassword;
     let password = req.body.password;
@@ -251,7 +251,7 @@ module.exports = {
     confirmUser,
     resendTokenPost,
     deleteUser,
-    findOneUser,
+    findSingleUser,
     findUser,
     pagedUsers,
     followUser,

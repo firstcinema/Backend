@@ -25,15 +25,15 @@ const FilmSchema = mongoose.Schema({
 
 const Film = (module.exports = mongoose.model("Film", FilmSchema));
 
-const search = (query, callback) => {
+function search(query, callback) {
     return Film.find({ title: query }, callback);
 };
 
-const addFilm = (film, callback) => {
+function addFilm(film, callback) {
     film.save(callback);
 };
 
-const deleteFilm = (filmId, callback) => {
+function deleteFilm(filmId, callback) {
     Film.findByIdAndDelete({ _id: filmId }, callback);
 };
 

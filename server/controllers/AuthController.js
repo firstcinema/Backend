@@ -1,6 +1,8 @@
 const passport = require("passport");
+const { userService } = require('../services/');
 
-const user = function(req, res) {
+
+function user(req, res) {
     res.send({
         success: true,
         message: 'User account found',
@@ -8,11 +10,12 @@ const user = function(req, res) {
     });
 }
 
-const login = function(req, res, next) {
-    passport.authenticate('local', function(err, user, info) {
-        if (err) {
-            return next(err);
+function login(strat, req, res, next) {
+    passport.authenticate(strat, function(error, user, info) {
+        if (error) {
+            return next(error);
         }
+
         if (!user) {
             return res.send({ success: false, message: 'Incorrect Username or Password' });
         }
@@ -23,41 +26,38 @@ const login = function(req, res, next) {
                 message: 'Your account has not been verified'
             });
         }
-        req.login(user, loginErr => {
-            if (loginErr) {
-                return next(loginErr);
+
+        req.login(user, error => {
+            if (error) {
+                return next(error);
             }
-            return res.send({ success: true, message: 'Successfully Logged In' });
+            // Update last seen and ip address
+            userService.updateLogin(req.ip, user._id, (error) => {
+                if (error) console.log(error);
+                return res.redirect('/');
+            });
         });
     })(req, res, next);
 }
 
-const logout = function(req, res) {
+function logout(req, res) {
     req.logout();
     return res.status(200).send();
 }
 
-const authenticate = function(strat) {
+function authenticate(strat) {
     return passport.authenticate(strat);
 }
 
-const callback = function(strat) {
-    return passport.authenticate(strat, {
-        successRedirect: '/',
-        failureRedirect: '/login'
-    });
-}
 
-
-const middleware = function(req, res, next) {
-    if (!req.isAuthenticated()) {
-        res.json({
-            success: false,
-            message: "You are not authenticated"
-        });
-    } else {
+function middleware(req, res, next) {
+    if (req.isAuthenticated) {
         return next();
     }
+    res.json({
+        success: false,
+        message: "You are not authenticated"
+    });
 }
 
 module.exports = {
@@ -65,6 +65,5 @@ module.exports = {
     user,
     login,
     logout,
-    authenticate,
-    callback
+    authenticate
 }

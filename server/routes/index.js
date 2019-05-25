@@ -5,4 +5,4 @@ module.exports = {
     userRoute,
     authRoute,
     mailRoute
-};
+}

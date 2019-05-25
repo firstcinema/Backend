@@ -1,44 +1,54 @@
 const User = require('../models/User');
 const mongoose = require('mongoose');
-const saveUser = (user, callback) => {
+
+function saveUser(user, callback) {
     let newUser = Object.assign(new User(), user);
     User.addUser(newUser, err => {
         callback(err, newUser);
     });
-};
+}
 
-const deleteUser = (userId) => {
+function deleteUser(userId) {
     User.deleteById(userId, (error) => {
         if (error) throw error;
     });
-};
+}
 
-const findUsers = (conditions, callback) => {
+function findUsers(conditions, callback) {
     User.findUsers(conditions, callback);
-};
+}
 
-const pagedUsers = (perPage, page, limit, callback) => {
+function pagedUsers(perPage, page, limit, callback) {
     User.find({}).skip((perPage * page) - perPage)
         .limit(limit).sort({
             joined: 'asc'
         }).exec(callback);
-};
+}
 
-const count = (callback) => {
+function count(callback) {
     User.countDocuments().exec(callback);
 }
 
+function findSingleUser(conditions, callback) {
+    User.findSingleUser(conditions, callback);
+}
 
-const findOneUser = (conditions, callback) => {
-    User.findOneUser(conditions, callback);
-};
+function updateLogin(ipAddress, userId, callback) {
+    User.findByIdAndUpdate(userId, {
+        lastSeen: Date.now(),
+        remoteAddress: ipAddress
+    }, {
+        useFindAndModify: false,
+        new: true
+    }, callback);
+}
 
-const updateUser = (userId, update, callback) => {
+function updateUser(userId, update, callback) {
     User.updateUser(userId, update, callback);
     //User.findByIdAndUpdate(userId, update, { new: true }, callback);
 }
 
-const followUser = function(userId, followingId, callback) {
+function followUser(userId, followingId, callback) {
 
     let bulk = User.collection.initializeUnorderedBulkOp();
 
@@ -63,7 +73,7 @@ const followUser = function(userId, followingId, callback) {
     });
 }
 
-const unfollowUser = function(userId, followingId, callback) {
+function unfollowUser(userId, followingId, callback) {
 
     let bulk = User.collection.initializeUnorderedBulkOp();
 
@@ -88,7 +98,7 @@ const unfollowUser = function(userId, followingId, callback) {
     });
 }
 
-const changePassword = function(user, attemptedPassword, newPassword, callback) {
+function changePassword(user, attemptedPassword, newPassword, callback) {
     User.comparePassword(attemptedPassword, user.password, (isMatch) => {
         if (isMatch) {
             User.changePassword(user, newPassword, (error, newUser) => {
@@ -105,8 +115,9 @@ module.exports = {
     saveUser,
     changePassword,
     updateUser,
+    updateLogin,
     deleteUser,
-    findOneUser,
+    findSingleUser,
     findUsers,
     pagedUsers,
     followUser,

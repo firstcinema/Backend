@@ -9,7 +9,6 @@ function sendMail(req, res) {
     };
 
     let replacements = req.body.replacements;
-    //replacements.user = req.user;
 
     tokenService.findByUserId(req.user._id, (error, tokenObj) => {
         if (error) {
@@ -39,6 +38,8 @@ function sendMail(req, res) {
     });
 }
 
+
+// Temporary
 function getURL(type, token) {
     return `http://localhost:5000/api/users/${type}/${token}`;
 }

@@ -24,4 +24,4 @@ function sendMail(options, replacements, callback) {
 
 module.exports = {
     sendMail
-};
+}
