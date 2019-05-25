@@ -1,10 +1,15 @@
+const bcrypt = require("bcrypt");
 const User = require('../models/User');
 const mongoose = require('mongoose');
 
 function saveUser(user, callback) {
     let newUser = Object.assign(new User(), user);
-    User.addUser(newUser, err => {
-        callback(err, newUser);
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+            if (err) throw err;
+            newUser.password = hash;
+            newUSer.save(callback);
+        });
     });
 }
 
@@ -100,14 +105,25 @@ function unfollowUser(userId, followingId, callback) {
 }
 
 function changePassword(user, attemptedPassword, newPassword, callback) {
-    User.comparePassword(attemptedPassword, user.password, (isMatch) => {
+    comparePassword(attemptedPassword, user.password, (isMatch) => {
         if (isMatch) {
-            User.changePassword(user, newPassword, (error, newUser) => {
-                callback(error, newUser);
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newPassword, salt, (err, hash) => {
+                    if (err) throw err;
+                    user.password = hash;
+                    user.save(callback);
+                });
             });
         } else {
             callback(new Error('Incorrect Password'));
         }
+    });
+}
+
+function comparePassword(attemptedPassword, hash, callback) {
+    bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
+        if (error) throw error;
+        callback(isMatch);
     });
 }
 

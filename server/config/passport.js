@@ -6,7 +6,7 @@ module.exports = passport => {
     });
 
     passport.deserializeUser((id, done) => {
-        User.getById(id, (error, user) => {
+        User.findById({ _id: id }, (error, user) => {
             if (error) throw error;
             return done(null, user);
         });

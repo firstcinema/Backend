@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
 const UserSchema = mongoose.Schema({
     firstName: {
@@ -101,45 +100,12 @@ const UserSchema = mongoose.Schema({
     } */
 });
 
-const User = (module.exports = mongoose.model("User", UserSchema));
+//const User = (module.exports = mongoose.model("User", UserSchema));
 
-function addUser(user, callback) {
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            if (err) throw err;
-            user.password = hash;
-            user.save(callback);
-        });
-    });
-}
-
-function comparePassword(attemptedPassword, hash, callback) {
-    bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
-        if (error) throw error;
-        callback(isMatch);
-    });
-}
-
-function changePassword(user, newPassword, callback) {
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newPassword, salt, (err, hash) => {
-            if (err) throw err;
-            user.password = hash;
-            user.save(callback);
-        });
-    });
-}
-
-function updateUser(userId, update, callback) {
-    User.findByIdAndUpdate(userId, update, {
+module.exports = mongoose.model('User', UserSchema);
+module.exports.updateUser = function(userId, update, callback) {
+    this.findByIdAndUpdate(userId, update, {
         useFindAndModify: false,
         new: true
     }, callback);
-}
-
-module.exports = {
-    addUser,
-    comparePassword,
-    changePassword,
-    updateUser
 }
