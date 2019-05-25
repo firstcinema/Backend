@@ -9,13 +9,15 @@ function saveUser(user, callback) {
 }
 
 function deleteUser(userId) {
-    User.deleteById(userId, (error) => {
+    User.findByIdAndDelete({
+        _id: userId
+    }, (error) => {
         if (error) throw error;
     });
 }
 
 function findUsers(conditions, callback) {
-    User.findUsers(conditions, callback);
+    User.find(conditions, callback);
 }
 
 function pagedUsers(perPage, page, limit, callback) {
@@ -30,7 +32,7 @@ function count(callback) {
 }
 
 function findSingleUser(conditions, callback) {
-    User.findSingleUser(conditions, callback);
+    User.findOne(conditions, callback);
 }
 
 function updateLogin(ipAddress, userId, callback) {
@@ -45,7 +47,6 @@ function updateLogin(ipAddress, userId, callback) {
 
 function updateUser(userId, update, callback) {
     User.updateUser(userId, update, callback);
-    //User.findByIdAndUpdate(userId, update, { new: true }, callback);
 }
 
 function followUser(userId, followingId, callback) {
@@ -122,4 +123,4 @@ module.exports = {
     pagedUsers,
     followUser,
     unfollowUser
-};
+}

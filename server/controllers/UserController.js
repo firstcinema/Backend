@@ -49,7 +49,7 @@ function findSingleUser(req, res, next) {
             user: users
         });
     });
-};
+}
 
 function findUser(req, res, next) {
     userService.findUsers(req.params, (error, users) => {
@@ -60,7 +60,7 @@ function findUser(req, res, next) {
             users: users
         });
     });
-};
+}
 
 function pagedUsers(req, res, next) {
     var perPage = 15;
@@ -150,6 +150,7 @@ function confirmUser(req, res) {
                         message: error.message
                     });
                 }
+
                 res.status(200).json({
                     success: true,
                     message: 'Your account has successfully been verified. Please log in'

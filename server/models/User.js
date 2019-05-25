@@ -103,22 +103,6 @@ const UserSchema = mongoose.Schema({
 
 const User = (module.exports = mongoose.model("User", UserSchema));
 
-function findSingleUser(conditions, callback) {
-    return User.findOne(conditions, callback);
-}
-
-function findUsers(conditions, callback) {
-    return User.find(conditions, callback);
-}
-
-function getById(id, callback) {
-    User.findById(id, callback);
-}
-
-function getByUserName(userName, callback) {
-    User.findOne({ userName: userName }, callback);
-}
-
 function addUser(user, callback) {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(user.password, salt, (err, hash) => {
@@ -127,16 +111,6 @@ function addUser(user, callback) {
             user.save(callback);
         });
     });
-}
-
-function deleteById(userId, callback) {
-    User.findByIdAndDelete({
-        _id: userId
-    }, callback);
-}
-
-function deleteByName(name, callback) {
-    User.deleteMany({ userName: name }, callback);
 }
 
 function comparePassword(attemptedPassword, hash, callback) {
@@ -164,13 +138,7 @@ function updateUser(userId, update, callback) {
 }
 
 module.exports = {
-    findSingleUser,
-    findUsers,
-    getById,
-    getByUserName,
     addUser,
-    deleteById,
-    deleteByName,
     comparePassword,
     changePassword,
     updateUser
