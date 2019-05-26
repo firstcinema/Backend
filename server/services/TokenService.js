@@ -1,11 +1,11 @@
 const Token = require('../models/Token');
 
-function findToken(token) {
-    return new Promise(res => Token.findOne({ token: token }, res));
+async function findToken(token) {
+    return await Token.findOne({ token: token });
 }
 
-function findByUserId(userId) {
-    return new Promise(res => Token.findOne({ _userId: userId }, res));
+async function findByUserId(userId) {
+    return await Token.findOne({ _userId: userId });
 }
 
 module.exports = {

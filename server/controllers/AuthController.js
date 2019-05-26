@@ -3,6 +3,12 @@ const { userService } = require('../services/');
 
 
 function user(req, res) {
+    if (!req.user) {
+        return res.json({
+            success: false,
+            message: 'User not logged in'
+        });
+    }
     res.send({
         success: true,
         message: 'User account found',
@@ -27,19 +33,23 @@ function login(strat, req, res, next) {
             });
         }
 
-        req.login(user, error => {
+        req.login(user, async error => {
             if (error) {
                 return next(error);
             }
             // Update last seen and ip address
-            userService.updateLogin(req.ip, user._id).then(() => {
-                res.status(200).redirect('/');
-            }).catch(error => {
+            try {
+                await userService.updateLogin(req.ip, user._id);
+                res.status(200).json({
+                    success: true,
+                    message: 'Successfully logged in'
+                });
+            } catch (error) {
                 return res.status(500).json({
                     success: false,
                     message: error.message
                 });
-            });
+            }
         });
     })(req, res, next);
 }

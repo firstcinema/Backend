@@ -2,13 +2,17 @@ const bcrypt = require("bcrypt");
 const User = require('../models/User');
 const mongoose = require('mongoose');
 
-function saveUser(user, callback) {
-    let newUser = Object.assign(new User(), user);
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUSer.save(callback);
+function saveUser(user) {
+    return new Promise(res, reject => {
+        let newUser = Object.assign(new User(), user);
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newUser.password, salt, (error, hash) => {
+                if (error) {
+                    reject(error);
+                }
+                newUser.password = hash;
+                newUser.save(res);
+            });
         });
     });
 }
