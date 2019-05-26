@@ -1,19 +1,14 @@
 const Token = require('../models/Token');
 
-function saveToken(token, callback) {
-    token.save(callback);
+function findToken(token) {
+    return new Promise(res => Token.findOne({ token: token }, res));
 }
 
-function findToken(token, callback) {
-    Token.findOne({ token: token }, callback);
-}
-
-function findByUserId(userId, callback) {
-    Token.findOne({ _userId: userId }, callback);
+function findByUserId(userId) {
+    return new Promise(res => Token.findOne({ _userId: userId }, res));
 }
 
 module.exports = {
-    saveToken,
     findToken,
     findByUserId
 }

@@ -32,9 +32,13 @@ function login(strat, req, res, next) {
                 return next(error);
             }
             // Update last seen and ip address
-            userService.updateLogin(req.ip, user._id, (error) => {
-                if (error) console.log(error);
-                return res.redirect('/');
+            userService.updateLogin(req.ip, user._id).then(() => {
+                res.status(200).redirect('/');
+            }).catch(error => {
+                return res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
             });
         });
     })(req, res, next);

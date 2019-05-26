@@ -10,30 +10,26 @@ function sendMail(req, res) {
 
     let replacements = req.body.replacements;
 
-    tokenService.findByUserId(req.user._id, (error, tokenObj) => {
-        if (error) {
-            res.status(400).json({
-                success: false,
-                message: 'Could not find verification token'
-            });
-        }
-
+    tokenService.findByUserId(req.user._id).then(tokenObj => {
         if (tokenObj && tokenObj.token) {
             replacements.verificationURL = getURL('confirmation', tokenObj.token);
         }
+    }).catch(error => {
+        res.status(400).json({
+            success: false,
+            message: 'Could not find verification token'
+        });
     });
 
-    emailService.sendMail(mailOptions, replacements, (error, info) => {
-        if (error) {
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
-        console.log(info);
+    emailService.sendMail(mailOptions, replacements).then(info => {
         return res.status(200).json({
             success: true,
             message: `Email Sent: ${info.response}`
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            success: false,
+            message: error.message
         });
     });
 }

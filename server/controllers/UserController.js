@@ -21,12 +21,13 @@ function createUser(req, res, next) {
                 _userId: user._id,
                 token: crypto.randomBytes(16).toString('hex')
             });
-            tokenService.saveToken(token, (error) => {
-                if (error) return res.status(500).send({ success: false, message: error.message });
+            token.save().then(token => {
                 res.status(201).json({
                     success: true,
                     message: "Successfully Registered!"
                 });
+            }).catch(error => {
+                return res.status(500).send({ success: false, message: error.message });
             });
         }
     });
@@ -34,31 +35,36 @@ function createUser(req, res, next) {
 
 function deleteUser(req, res, next) {
     userService.deleteUser(req.body.id);
-    res.json({
+    res.status(200).json({
         success: true,
         message: "User Deleted"
     });
 }
 
 function findSingleUser(req, res, next) {
-    userService.findSingleUser(req.params, (error, users) => {
-        if (error) throw error;
-        res.json({
+    userService.findSingleUser(req.params).then(users => {
+        res.status(200).json({
             success: true,
             message: 'User Exists',
             user: users
         });
+    }).catch(error => {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        })
     });
 }
 
 function findUser(req, res, next) {
-    userService.findUsers(req.params, (error, users) => {
-        if (error) throw error;
+    userService.findUsers(req.params).then(users => {
         return res.json({
             success: true,
             message: 'Users Exists',
             users: users
         });
+    }).catch(error => {
+        throw error;
     });
 }
 
@@ -66,11 +72,9 @@ function pagedUsers(req, res, next) {
     var perPage = 15;
     var limit = 15;
     var page = Math.max(1, req.params.page || 1);
-
-    userService.pagedUsers(perPage, page, limit, (error, users) => {
-        if (error) throw error;
-        userService.count((error, count) => {
-            return res.json({
+    userService.pagedUsers(perPage, page, limit).then(users => {
+        userService.count().then(count => {
+            return res.status(200).json({
                 success: true,
                 message: 'Users Found!',
                 limit: limit,
@@ -79,6 +83,11 @@ function pagedUsers(req, res, next) {
                 pages: Math.ceil(count / perPage),
                 users: users
             });
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            success: false,
+            message: error.message
         });
     });
 }
@@ -101,15 +110,7 @@ function updateUser(req, res, next) {
 }
 
 function confirmUser(req, res) {
-    tokenService.findToken(req.params.token, (error, token) => {
-
-        if (error) {
-            return res.status(400).json({
-                success: false,
-                message: error.message
-            });
-        }
-
+    tokenService.findToken(req.params.token).then(token => {
         if (!token) {
             return res.status(400).json({
                 success: false,
@@ -157,6 +158,11 @@ function confirmUser(req, res) {
                 })
             });
         });
+    }).catch(error => {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
     });
 }
 
@@ -183,12 +189,13 @@ function resendTokenPost(req, res) {
             token: crypto.randomBytes(16).toString('hex')
         });
 
-        tokenService.saveToken(token, (error) => {
-            if (error) return res.status(500).send({ success: false, message: error.message });
+        token.save().then(token => {
             res.status(201).json({
                 success: true,
                 message: `A new verification email has been sent to ${user.email}`
             });
+        }).catch(error => {
+            return res.status(500).send({ success: false, message: error.message });
         });
     });
 }

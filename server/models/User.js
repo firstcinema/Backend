@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
 const UserSchema = mongoose.Schema({
@@ -108,4 +109,11 @@ module.exports.updateUser = function(userId, update, callback) {
         useFindAndModify: false,
         new: true
     }, callback);
+}
+
+module.exports.comparePassword = function(attemptedPassword, hash, callback) {
+    bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
+        if (error) throw error;
+        callback(isMatch);
+    });
 }

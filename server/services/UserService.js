@@ -21,33 +21,33 @@ function deleteUser(userId) {
     });
 }
 
-function findUsers(conditions, callback) {
-    User.find(conditions, callback);
+function findUsers(conditions) {
+    return new Promise(res => User.find(conditions, res));
 }
 
-function pagedUsers(perPage, page, limit, callback) {
-    User.find({}).skip((perPage * page) - perPage)
+function pagedUsers(perPage, page, limit) {
+    return User.find({}).skip((perPage * page) - perPage)
         .limit(limit).sort({
             joined: 'asc'
-        }).exec(callback);
+        }).exec();
 }
 
-function count(callback) {
-    User.countDocuments().exec(callback);
+function count() {
+    return User.countDocuments().exec();
 }
 
-function findSingleUser(conditions, callback) {
-    User.findOne(conditions, callback);
+function findSingleUser(conditions) {
+    return new Promise(res => User.findOne(conditions, res));
 }
 
-function updateLogin(ipAddress, userId, callback) {
-    User.findByIdAndUpdate(userId, {
+function updateLogin(ipAddress, userId) {
+    return new Promise(res => User.findByIdAndUpdate(userId, {
         lastSeen: Date.now(),
         remoteAddress: ipAddress
     }, {
         useFindAndModify: false,
         new: true
-    }, callback);
+    }, res));
 }
 
 function updateUser(userId, update, callback) {
@@ -105,7 +105,7 @@ function unfollowUser(userId, followingId, callback) {
 }
 
 function changePassword(user, attemptedPassword, newPassword, callback) {
-    comparePassword(attemptedPassword, user.password, (isMatch) => {
+    User.comparePassword(attemptedPassword, user.password, (isMatch) => {
         if (isMatch) {
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newPassword, salt, (err, hash) => {
@@ -117,13 +117,6 @@ function changePassword(user, attemptedPassword, newPassword, callback) {
         } else {
             callback(new Error('Incorrect Password'));
         }
-    });
-}
-
-function comparePassword(attemptedPassword, hash, callback) {
-    bcrypt.compare(attemptedPassword, hash, (error, isMatch) => {
-        if (error) throw error;
-        callback(isMatch);
     });
 }
 

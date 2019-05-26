@@ -6,7 +6,9 @@ const localStrat = new LocalStrategy({
     usernameField: "userName",
     passwordField: "password"
 }, (req, userName, password, done) => {
-    User.getByUserName(userName, (error, user) => {
+    User.findOne({
+        userName: userName
+    }, (error, user) => {
         if (error) {
             return done(error);
         }
