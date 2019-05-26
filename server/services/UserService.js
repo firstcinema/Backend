@@ -37,7 +37,14 @@ function count() {
 }
 
 function findSingleUser(conditions) {
-    return new Promise(res => User.findOne(conditions, res));
+    return new Promise((res, reject) => {
+        User.findOne(conditions, function(error, resParam) {
+            if (error) {
+                reject(error);
+            }
+            res(resParam);
+        });
+    });
 }
 
 function updateLogin(ipAddress, userId) {
@@ -50,11 +57,11 @@ function updateLogin(ipAddress, userId) {
     }, res));
 }
 
-function updateUser(userId, update, callback) {
-    User.updateUser(userId, update, callback);
+function updateUser(userId, update) {
+    return new Promise(res => User.updateUser(userId, update, res));
 }
 
-function followUser(userId, followingId, callback) {
+function followUser(userId, followingId) {
 
     let bulk = User.collection.initializeUnorderedBulkOp();
 
@@ -74,12 +81,10 @@ function followUser(userId, followingId, callback) {
         }
     });
 
-    bulk.execute((error, doc) => {
-        callback(error, doc);
-    });
+    return new Promise(res => bulk.execute(res));
 }
 
-function unfollowUser(userId, followingId, callback) {
+function unfollowUser(userId, followingId) {
 
     let bulk = User.collection.initializeUnorderedBulkOp();
 
@@ -99,24 +104,25 @@ function unfollowUser(userId, followingId, callback) {
         }
     });
 
-    bulk.execute((error, doc) => {
-        callback(error, doc);
-    });
+
+    return new Promise(res => bulk.execute(res));
 }
 
-function changePassword(user, attemptedPassword, newPassword, callback) {
-    User.comparePassword(attemptedPassword, user.password, (isMatch) => {
-        if (isMatch) {
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(newPassword, salt, (err, hash) => {
-                    if (err) throw err;
-                    user.password = hash;
-                    user.save(callback);
+function changePassword(user, attemptedPassword, newPassword) {
+    return new Promise(res, reject => {
+        User.comparePassword(attemptedPassword, user.password, (isMatch) => {
+            if (isMatch) {
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(newPassword, salt, (err, hash) => {
+                        if (err) throw err;
+                        user.password = hash;
+                        res(user.save());
+                    });
                 });
-            });
-        } else {
-            callback(new Error('Incorrect Password'));
-        }
+            } else {
+                reject(new Error('Incorrect Password'));
+            }
+        });
     });
 }
 

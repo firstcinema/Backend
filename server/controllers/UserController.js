@@ -42,11 +42,11 @@ function deleteUser(req, res, next) {
 }
 
 function findSingleUser(req, res, next) {
-    userService.findSingleUser(req.params).then(users => {
+    userService.findSingleUser(req.params).then(user => {
         res.status(200).json({
             success: true,
             message: 'User Exists',
-            user: users
+            user: user
         });
     }).catch(error => {
         return res.status(500).json({
@@ -93,18 +93,16 @@ function pagedUsers(req, res, next) {
 }
 
 function updateUser(req, res, next) {
-    userService.updateUser(req.params.userId, req.body, (error, user) => {
-        if (error) {
-            return res.status(500).json({
-                success: false,
-                message: 'An Error Has Occured: ' + error
-            });
-        }
-
+    userService.updateUser(req.params.userId, req.body).then(user => {
         return res.json({
             success: true,
             message: 'Successfully Updated',
             user: user
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            success: false,
+            message: error.message
         });
     });
 }
@@ -120,13 +118,7 @@ function confirmUser(req, res) {
 
         userService.findSingleUser({
             _id: token._userId
-        }, (error, user) => {
-            if (error) {
-                return res.status(500).json({
-                    success: false,
-                    message: error.message
-                });
-            }
+        }).then(user => {
 
             if (!user) return res.status(400).json({
                 success: false,
@@ -144,18 +136,21 @@ function confirmUser(req, res) {
                 _id: user._id
             }, {
                 isVerified: true
-            }, (error) => {
-                if (error) {
-                    return res.status(500).json({
-                        success: false,
-                        message: error.message
-                    });
-                }
-
+            }).then(() => {
                 res.status(200).json({
                     success: true,
                     message: 'Your account has successfully been verified. Please log in'
                 })
+            }).catch(error => {
+                return res.status(500).json({
+                    success: false,
+                    message: error.message
+                });
+            });
+        }).catch(error => {
+            return res.status(500).json({
+                success: false,
+                message: error.message
             });
         });
     }).catch(error => {
@@ -169,7 +164,7 @@ function confirmUser(req, res) {
 function resendTokenPost(req, res) {
     userService.findSingleUser({
         email: req.body.email
-    }, (error, user) => {
+    }).then(user => {
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -197,22 +192,27 @@ function resendTokenPost(req, res) {
         }).catch(error => {
             return res.status(500).send({ success: false, message: error.message });
         });
+    }).catch(error => {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
     });
 }
 
 function followUser(req, res) {
     const userId = req.user._id;
     const followingId = req.body.followingId;
-    userService.followUser(userId, followingId, (error, doc) => {
-        if (error) {
-            return res.json({
-                success: false,
-                message: error.message
-            });
-        }
+    userService.followUser(userId, followingId).then(doc => {
+        console.log(doc); // Curious what this object contains
         return res.status(200).json({
             success: true,
             message: 'User Followed'
+        });
+    }).catch(error => {
+        return res.json({
+            success: false,
+            message: error.message
         });
     });
 }
@@ -220,16 +220,16 @@ function followUser(req, res) {
 function unfollowUser(req, res) {
     const userId = req.user._id;
     const followingId = req.body.followingId;
-    userService.unfollowUser(userId, followingId, (error, doc) => {
-        if (error) {
-            return res.json({
-                success: false,
-                message: error.message
-            });
-        }
+    userService.unfollowUser(userId, followingId).then(doc => {
+        console.log(doc); // Curious what this object contains
         return res.status(200).json({
             success: true,
             message: 'User Unfollowed'
+        });
+    }).catch(error => {
+        return res.json({
+            success: false,
+            message: error.message
         });
     });
 }
@@ -238,17 +238,16 @@ function changePassword(req, res) {
     let user = req.user;
     let attemptedPassword = req.body.currentPassword;
     let password = req.body.password;
-    userService.changePassword(user, attemptedPassword, password, (error, newUser) => {
-        if (error) {
-            return res.json({
-                success: false,
-                message: error.message
-            });
-        }
+    userService.changePassword(user, attemptedPassword, password).then(newUser => {
         return res.status(200).json({
             success: true,
             message: 'Password successfully updated'
         })
+    }).catch(error => {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
     });
 }
 
@@ -264,4 +263,4 @@ module.exports = {
     pagedUsers,
     followUser,
     unfollowUser
-};
+}
