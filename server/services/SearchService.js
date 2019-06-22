@@ -10,12 +10,15 @@ function addIndex(user) {
     });
 }
 
-function updateIndex(user, callback) {
-    index.partialUpdateObject({
-        objectID: user._id,
-        userName: user.userName
-    }, true, (error, content) => {
-        callback(error, content);
+function updateIndex(user) {
+    return new Promise((res, reject) => {
+        index.partialUpdateObject({
+            objectID: user._id,
+            userName: user.userName
+        }, true, (error, content) => {
+            if (error) reject(error);
+            res(content);
+        });
     });
 }
 

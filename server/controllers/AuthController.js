@@ -40,16 +40,12 @@ function login(strat, req, res, next) {
             // Update last seen and ip address
             try {
                 await userService.updateLogin(req.ip, user._id);
-                searchService.updateIndex(user, (error, content) => {
-                    if (error) {
-                        return console.log(error);
-                    }
-                    console.log(content);
-
+                await searchService.updateIndex(user);
+                res.status(200).json({
+                    success: true,
+                    message: 'Login successful'
                 });
-                res.status(200).redirect('/');
             } catch (error) {
-                console.log(error);
                 return res.status(500).json({
                     success: false,
                     message: error.message
