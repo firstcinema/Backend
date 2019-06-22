@@ -17,7 +17,7 @@ async function createUser(req, res, next) {
             token: crypto.randomBytes(16).toString('hex')
         });
 
-        let token = await token.save();
+        token.save();
 
         req.login(user, (error) => {
             if (error) {
@@ -191,8 +191,7 @@ async function followUser(req, res) {
     const userId = req.user._id;
     const followingId = req.body.followingId;
     try {
-        let doc = await userService.followUser(userId, followingId);
-        console.log(doc); // Curious what this object contains
+        await userService.followUser(userId, followingId);
         return res.status(200).json({
             success: true,
             message: 'User Followed'
@@ -209,8 +208,7 @@ async function unfollowUser(req, res) {
     const userId = req.user._id;
     const followingId = req.body.followingId;
     try {
-        let doc = await userService.unfollowUser(userId, followingId);
-        console.log(doc); // Curious what this object contains
+        await userService.unfollowUser(userId, followingId);
         return res.status(200).json({
             success: true,
             message: 'User Unfollowed'

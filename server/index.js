@@ -33,7 +33,9 @@ require("./config/passport")(passport);
 // Mongoose
 mongoose.connect(keys.mongodb.dbURI, {
     useCreateIndex: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    reconnectTries: 60,
+    reconnectInterval: 1000
 });
 
 mongoose.connection.on("connected", () => {

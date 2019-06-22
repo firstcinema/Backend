@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require('../models/User');
+const searchService = require('./SearchService');
 const mongoose = require('mongoose');
 
 function saveUser(user) {
@@ -12,6 +13,7 @@ function saveUser(user) {
                 }
                 newUser.password = hash;
                 newUser.save(res);
+                searchService.addIndex(newUser);
             });
         });
     });
@@ -26,7 +28,7 @@ function deleteUser(userId) {
 }
 
 function findUsers(conditions) {
-    return new Promise(res => User.find(conditions, res));
+    return User.find(conditions).populate('followers').populate('following').exec();
 }
 
 function pagedUsers(perPage, page, limit) {
@@ -41,14 +43,7 @@ function count() {
 }
 
 function findSingleUser(conditions) {
-    return new Promise((res, reject) => {
-        User.findOne(conditions, function(error, resParam) {
-            if (error) {
-                reject(error);
-            }
-            res(resParam);
-        });
-    });
+    return User.findOne(conditions).populate('followers').populate('following').exec();
 }
 
 function updateLogin(ipAddress, userId) {
@@ -84,7 +79,6 @@ function followUser(userId, followingId) {
             followers: mongoose.Types.ObjectId(userId)
         }
     });
-
     return new Promise(res => bulk.execute(res));
 }
 
@@ -107,8 +101,6 @@ function unfollowUser(userId, followingId) {
             followers: mongoose.Types.ObjectId(userId)
         }
     });
-
-
     return new Promise(res => bulk.execute(res));
 }
 

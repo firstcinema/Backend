@@ -7,6 +7,11 @@ module.exports = {
         dbURI: '',
         secret: ''
     },
+    algolia: {
+        APP_ID: '',
+        API_KEY: '',
+        index_name: ''
+    },
     emails: {
         auth: {
             api_key: 'SENDGRID_API_KEY'

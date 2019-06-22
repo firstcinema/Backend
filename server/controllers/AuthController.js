@@ -1,5 +1,5 @@
 const passport = require("passport");
-const { userService } = require('../services/');
+const { searchService, userService } = require('../services/');
 
 
 function user(req, res) {
@@ -40,11 +40,16 @@ function login(strat, req, res, next) {
             // Update last seen and ip address
             try {
                 await userService.updateLogin(req.ip, user._id);
-                res.status(200).json({
-                    success: true,
-                    message: 'Successfully logged in'
+                searchService.updateIndex(user, (error, content) => {
+                    if (error) {
+                        return console.log(error);
+                    }
+                    console.log(content);
+
                 });
+                res.status(200).redirect('/');
             } catch (error) {
+                console.log(error);
                 return res.status(500).json({
                     success: false,
                     message: error.message
