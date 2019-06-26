@@ -34,6 +34,7 @@ require("./config/passport")(passport);
 mongoose.connect(keys.mongodb.dbURI, {
     useCreateIndex: true,
     useNewUrlParser: true,
+    autoReconnect: true,
     reconnectTries: 60,
     reconnectInterval: 1000
 });
